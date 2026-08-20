@@ -1,0 +1,50 @@
+:root {
+  color-scheme: light;
+
+  --color-paper: oklch(96.5% 0.014 82);
+  --color-paper-raised: oklch(94% 0.016 82);
+  --color-ink: oklch(19% 0.014 58);
+  --color-muted: oklch(43% 0.014 62);
+  --color-faint: oklch(48% 0.012 70);
+  --color-rule: oklch(76% 0.018 78);
+  --color-accent: oklch(48% 0.15 31);
+  --color-focus: oklch(52% 0.18 31);
+  --color-selection: oklch(86% 0.07 54);
+
+  --font-display: "Newsreader", "Noto Serif KR", ui-serif, serif;
+  --font-body: "IBM Plex Sans", "Noto Sans KR", ui-sans-serif, sans-serif;
+  --font-mono: "IBM Plex Mono", "D2Coding", ui-monospace, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.5625rem;
+  --text-xl: 1.953rem;
+  --text-2xl: 2.441rem;
+  --text-3xl: 3.052rem;
+  --text-display: clamp(2.75rem, 8vw, 5.25rem);
+
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 9rem;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+
+  --rule-hair: 1px;
+  --rule-double: 3px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+}

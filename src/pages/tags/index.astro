@@ -1,0 +1,41 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import { formatShortDate, getPostPath, getPosts, type Post } from "../../lib/posts";
+
+const posts = getPosts();
+const tags = new Map<string, Post[]>();
+
+for (const post of posts) {
+  for (const tag of post.tags) {
+    tags.set(tag, [...(tags.get(tag) ?? []), post]);
+  }
+}
+
+const sortedTags = [...tags.entries()].sort(([a], [b]) => a.localeCompare(b, "ko"));
+---
+
+<PageLayout title="태그">
+  {
+    sortedTags.length > 0 ? (
+      <div class="tag-index">
+        {sortedTags.map(([tag, taggedPosts]) => (
+          <section class="tag-group">
+            <h2>{tag}</h2>
+            <ol>
+              {taggedPosts.map((post) => (
+                <li>
+                  <a href={getPostPath(post)}>{post.title}</a>
+                  <time datetime={post.publishedAt}>
+                    {formatShortDate(post.publishedAt)}
+                  </time>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))}
+      </div>
+    ) : (
+      <p>아직 분류된 글이 없습니다.</p>
+    )
+  }
+</PageLayout>

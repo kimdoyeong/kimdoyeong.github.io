@@ -1,0 +1,50 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../lib/site";
+import "../../assets/css/styles.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  type?: "website" | "article";
+}
+
+const {
+  title = SITE_TITLE,
+  description = SITE_DESCRIPTION,
+  type = "website",
+} = Astro.props;
+const documentTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="ko-KR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{documentTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="김도영" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE_TITLE} RSS`} href="/feed.xml" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={documentTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={SITE_TITLE} />
+    <meta property="og:locale" content="ko_KR" />
+    <meta name="twitter:card" content="summary" />
+  </head>
+  <body>
+    <a class="skip-link" href="#content">본문으로 건너뛰기</a>
+    <div class="site-shell">
+      <Header />
+      <main id="content">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

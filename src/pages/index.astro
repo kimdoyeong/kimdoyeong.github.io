@@ -1,0 +1,49 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { formatShortDate, getPostPath, getPosts } from "../lib/posts";
+
+const posts = getPosts();
+---
+
+<BaseLayout>
+  <section class="writing-index" aria-labelledby="writing-heading">
+    <div class="section-heading">
+      <h2 id="writing-heading">최근 글</h2>
+      {posts.length > 0 && <p>총 {posts.length}편</p>}
+    </div>
+
+    {
+      posts.length > 0 ? (
+        <ol class="post-list">
+          {posts.map((post) => (
+            <li>
+              <article class="post-row">
+                <time datetime={post.publishedAt}>
+                  {formatShortDate(post.publishedAt)}
+                </time>
+                <div class="post-row__body">
+                  <h3>
+                    <a href={getPostPath(post)}>{post.title}</a>
+                  </h3>
+                  <p>{post.description ?? "본문에서 이어지는 생각을 읽어보세요."}</p>
+                </div>
+                {post.tags.length > 0 && (
+                  <ul class="post-row__tags" aria-label="태그">
+                    {post.tags.slice(0, 2).map((tag) => <li>{tag}</li>)}
+                  </ul>
+                )}
+              </article>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <div class="empty-index">
+          <p>첫 글을 준비하고 있습니다.</p>
+          <p>
+            <code>src/content/posts/first-post.md</code>를 열어 글쓰기를 시작할 수 있습니다.
+          </p>
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>
