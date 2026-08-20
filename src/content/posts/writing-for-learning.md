@@ -7,7 +7,7 @@ tags:
   - 학습
 readingTime: 3
 ---
-이 글은 [Blog about things you don't understand yet](https://www.seangoedecke.com/blog-about-things-you-dont-understand-yet/)을 읽고 작성했다.
+> 이 글은 [Blog about things you don't understand yet](https://www.seangoedecke.com/blog-about-things-you-dont-understand-yet/)을 읽고 작성했다.
 
 글을 쓰면서 학습한다는 것은 오래 전부터 내려오던 개념이다. 우리는 글을 쓰기 위해 개념을 완전히 이해하고 써야 한다고 생각하지만, 이해하지 못한 개념을 쓰는 것은 학습에 큰 도움이 된다.
 
