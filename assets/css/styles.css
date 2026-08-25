@@ -460,6 +460,36 @@ main {
   font-size: var(--text-xs);
 }
 
+.comments {
+  display: grid;
+  gap: var(--space-xl);
+  max-width: 68ch;
+  margin-inline: auto;
+  padding-block-start: var(--space-3xl);
+}
+
+.comments__header {
+  display: grid;
+  gap: var(--space-xs);
+  padding-block-start: var(--space-lg);
+  border-top: var(--rule-hair) solid var(--color-ink);
+}
+
+.comments__header h2 {
+  font-size: var(--text-xl);
+}
+
+.comments__header p,
+.comments noscript {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+.comments .giscus,
+.comments .giscus-frame {
+  width: 100%;
+}
+
 .tag-index,
 .tag-group,
 .tag-group ol {

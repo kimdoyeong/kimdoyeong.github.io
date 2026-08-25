@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import Comments from "../../../../../components/Comments.astro";
 import {
   formatLongDate,
   getPostPath,
@@ -69,5 +70,7 @@ const Content = post.Content as any;
         </nav>
       )
     }
+
+    <Comments />
   </article>
 </BaseLayout>
