@@ -14,12 +14,12 @@ for (const post of posts) {
 const sortedTags = [...tags.entries()].sort(([a], [b]) => a.localeCompare(b, "ko"));
 ---
 
-<PageLayout title="태그">
+<PageLayout title="태그" description="주제별로 모아 본 글입니다.">
   {
     sortedTags.length > 0 ? (
       <div class="tag-index">
         {sortedTags.map(([tag, taggedPosts]) => (
-          <section class="tag-group">
+          <section class="tag-group" id={tag}>
             <h2>{tag}</h2>
             <ol>
               {taggedPosts.map((post) => (

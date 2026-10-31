@@ -1,6 +1,6 @@
 # doyeong.dev
 
-Astro로 빌드하고 GitHub Pages에 배포하는 개인 칼럼 블로그입니다.
+Astro로 빌드하고 GitHub Pages에 배포하는 김도영의 개인 사이트입니다. 홈(`/`)은 소개, 글 목록은 `/writing/`에 있습니다.
 
 ## 로컬에서 실행하기
 

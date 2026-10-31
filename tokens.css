@@ -1,20 +1,27 @@
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
-  --color-paper: oklch(96.5% 0.014 82);
-  --color-paper-raised: oklch(94% 0.016 82);
-  --color-ink: oklch(19% 0.014 58);
-  --color-muted: oklch(43% 0.014 62);
-  --color-faint: oklch(48% 0.012 70);
-  --color-rule: oklch(76% 0.018 78);
-  --color-accent: oklch(48% 0.15 31);
-  --color-focus: oklch(52% 0.18 31);
-  --color-selection: oklch(86% 0.07 54);
+  --color-bg: #0a0014;
+  --color-card: rgb(14 0 32 / 0.82);
+  --color-card-raised: #170530;
+  --color-ink: #fff6fd;
+  --color-muted: #c9b6dd;
+  --color-faint: #9a86b2;
+  --color-rule: #3a2457;
+  --color-grid: rgb(138 43 255 / 0.07);
+  --color-pink: #ff2bd6;
+  --color-cyan: #00f0ff;
+  --color-acid: #e6ff00;
+  --color-violet: #8a2bff;
+  --color-focus: var(--color-acid);
+  --color-selection: rgb(255 43 214 / 0.45);
 
-  --font-display: "Newsreader", "Noto Serif KR", ui-serif, serif;
-  --font-body: "IBM Plex Sans", "Noto Sans KR", ui-sans-serif, sans-serif;
-  --font-mono: "IBM Plex Mono", "D2Coding", ui-monospace, monospace;
+  --font-display: "Bungee", "Black Han Sans", Impact, sans-serif;
+  --font-shade: "Bungee Shade", "Bungee", "Black Han Sans", Impact, sans-serif;
+  --font-body: "Space Grotesk", "Pretendard Variable", Pretendard, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Space Mono", "D2Coding", ui-monospace, monospace;
 
+  --text-2xs: 0.6875rem;
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -22,8 +29,6 @@
   --text-lg: 1.5625rem;
   --text-xl: 1.953rem;
   --text-2xl: 2.441rem;
-  --text-3xl: 3.052rem;
-  --text-display: clamp(2.75rem, 8vw, 5.25rem);
 
   --space-3xs: 0.125rem;
   --space-2xs: 0.25rem;
@@ -34,17 +39,11 @@
   --space-xl: 2.5rem;
   --space-2xl: 4rem;
   --space-3xl: 6rem;
-  --space-4xl: 9rem;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --dur-micro: 120ms;
-  --dur-short: 220ms;
-  --dur-long: 420ms;
+  --dur-short: 160ms;
 
-  --rule-hair: 1px;
-  --rule-double: 3px;
+  --border: 2px;
+  --shadow-offset: 6px;
   --radius-sm: 2px;
-  --radius-md: 4px;
 }

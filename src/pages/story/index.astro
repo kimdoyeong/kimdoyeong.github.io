@@ -1,0 +1,23 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { Content } from "../../content/story/index.md";
+
+const title = "개발 기록";
+const description = "위키 파서에서 AI와 함께 운영하는 서비스까지, 만들면서 배운 것들.";
+---
+
+<BaseLayout title={title} description={description} type="article">
+  <article class="post story">
+    <header class="post__header">
+      <a class="chip back-link" href="/">← 소개</a>
+      <h1>{title}</h1>
+      <div class="post__meta">
+        <span>2016 — 2026</span>
+      </div>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

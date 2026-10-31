@@ -1,0 +1,31 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import PostList from "../../components/PostList.astro";
+import { getPosts } from "../../lib/posts";
+
+const posts = getPosts();
+const tags = [...new Set(posts.flatMap((post) => post.tags))].sort((a, b) =>
+  a.localeCompare(b, "ko"),
+);
+---
+
+<PageLayout title="글" description="만들고 배우며 든 생각을 적어 둡니다.">
+  {
+    tags.length > 0 && (
+      <ul class="tag-list writing-tags" aria-label="태그">
+        {tags.map((tag) => (
+          <li>
+            <a href={`/tags/#${encodeURIComponent(tag)}`}>{tag}</a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  {
+    posts.length > 0 ? (
+      <PostList posts={posts} />
+    ) : (
+      <p class="empty-index">첫 글을 준비하고 있습니다.</p>
+    )
+  }
+</PageLayout>

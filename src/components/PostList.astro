@@ -1,0 +1,33 @@
+---
+import { formatShortDate, getPostPath, type Post } from "../lib/posts";
+
+interface Props {
+  posts: Post[];
+  showDescription?: boolean;
+}
+
+const { posts, showDescription = true }: Props = Astro.props;
+---
+
+<ol class="post-list">
+  {
+    posts.map((post) => (
+      <li>
+        <article class="post-row">
+          <time datetime={post.publishedAt}>{formatShortDate(post.publishedAt)}</time>
+          <div>
+            <h3>
+              <a href={getPostPath(post)}>{post.title}</a>
+            </h3>
+            {showDescription && post.description && <p>{post.description}</p>}
+          </div>
+          {showDescription && post.tags.length > 0 && (
+            <ul class="tag-list" aria-label="태그">
+              {post.tags.map((tag) => <li>{tag}</li>)}
+            </ul>
+          )}
+        </article>
+      </li>
+    ))
+  }
+</ol>

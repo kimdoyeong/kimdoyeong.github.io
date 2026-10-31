@@ -1,38 +1,33 @@
 ---
 const currentPath = Astro.url.pathname;
 
-const isCurrent = (href: string) =>
-  href === "/" ? currentPath === href : currentPath.startsWith(href);
-
 const links = [
-  { href: "/", label: "글" },
-  { href: "/tags/", label: "태그" },
-  { href: "/about/", label: "소개" },
-  { href: "/feed.xml", label: "RSS" },
+  { href: "/", label: "소개", match: (path: string) => path === "/" },
+  { href: "/story/", label: "기록", match: (path: string) => path.startsWith("/story/") },
+  {
+    href: "/writing/",
+    label: "글",
+    match: (path: string) => path.startsWith("/writing/") || path.startsWith("/tags/"),
+  },
 ];
 ---
 
 <header class="masthead">
   <a class="masthead__wordmark" href="/" aria-label="doyeong.dev 홈">
-    doyeong.dev
+    <span>DOYEONG</span><span>.</span><span>DEV</span>
   </a>
 
-  <nav class="masthead__nav masthead__nav--desktop" aria-label="주요 메뉴">
+  <nav class="masthead__nav" aria-label="주요 메뉴">
     {
-      links.map(({ href, label }) => (
-        <a href={href} aria-current={isCurrent(href) ? "page" : undefined}>
+      links.map(({ href, label, match }) => (
+        <a
+          class="chip"
+          href={href}
+          aria-current={match(currentPath) ? "page" : undefined}
+        >
           {label}
         </a>
       ))
     }
   </nav>
-
-  <details class="masthead__menu">
-    <summary>메뉴</summary>
-    <nav aria-label="모바일 메뉴">
-      {links.map(({ href, label }) => <a href={href}>{label}</a>)}
-    </nav>
-  </details>
-
-  <div class="masthead__rule" aria-hidden="true"></div>
 </header>

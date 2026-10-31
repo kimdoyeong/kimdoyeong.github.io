@@ -1,5 +1,12 @@
+---
+import { SITE_AUTHOR } from "../lib/site";
+---
+
 <footer class="colophon">
-  <p>
-    doyeong.dev <a href="/feed.xml">RSS로 새 글 받기</a> <a href="mailto:hello@doyeong.dev">hello@doyeong.dev</a>
-  </p>
+  <p>Made by <strong>{SITE_AUTHOR}</strong> · doyeong.dev</p>
+  <nav aria-label="바깥 링크">
+    <a href="https://github.com/kimdoyeong">GitHub</a>
+    <a href="mailto:hello@doyeong.dev">Email</a>
+    <a href="/feed.xml">RSS</a>
+  </nav>
 </footer>

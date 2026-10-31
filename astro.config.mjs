@@ -4,4 +4,7 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://doyeong.dev",
   integrations: [sitemap()],
+  redirects: {
+    "/about": "/",
+  },
 });
