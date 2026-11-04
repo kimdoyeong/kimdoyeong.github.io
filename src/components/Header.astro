@@ -1,5 +1,8 @@
 ---
-const currentPath = Astro.url.pathname;
+// Normalize so "/writing" and "/writing/" both match.
+const currentPath = Astro.url.pathname.endsWith("/")
+  ? Astro.url.pathname
+  : `${Astro.url.pathname}/`;
 
 const links = [
   { href: "/", label: "소개", match: (path: string) => path === "/" },
