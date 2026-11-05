@@ -47,7 +47,7 @@ export const projects: Project[] = [
       "창 닫기가 타이머 종료로 이어지던 동작을 창 숨김으로 바꾸고 동작을 검증",
     ],
     stack: ["Svelte"],
-    link: { href: "https://to3mato.doyeong.dev", label: "사이트" },
+    link: { href: "https://to3mato.com", label: "사이트" },
   },
   {
     name: "EPUB Translator",
