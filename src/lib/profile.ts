@@ -22,6 +22,7 @@ export const projects: Project[] = [
       "Docker Compose와 Forgejo CI로 릴리스 브랜치 기반 자동 배포를 구성해 7회 릴리스",
     ],
     stack: ["Bun", "Hono", "Drizzle", "React 19", "TanStack", "Tauri"],
+    link: { href: "/writing/2026/11/05/fms", label: "회고" },
   },
   {
     name: "Space",
