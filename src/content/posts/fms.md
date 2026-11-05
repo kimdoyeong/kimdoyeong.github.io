@@ -11,9 +11,9 @@ readingTime: 10
 
 FMS는 File Management System의 약자로, 내가 필요로 해서 개발한 동영상 관리 프로젝트다. 내 NAS에 있는 영화, 애니메이션 혹은 유튜브 영상들을 쉽고 빠르게 찾기 위해서 개발되었다.
 
-![FMS 1](/images/1.png)
+![FMS 1](/images/fms/1.png)
 
-![FMS 2](/images/2.png)
+![FMS 2](/images/fms/2.png)
 
 ## 주요 기능
 
