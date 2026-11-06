@@ -1,6 +1,6 @@
 ---
 title: "[1/21] 프로덕트 사고 - 《AI 시대의 엔지니어링 전략》"
-description: 21일 연속 글 올리기 챌린지를 시작합니다.
+description: 한 발짝 떨어지니 보이는 부분
 publishedAt: "2026-11-06"
 tags:
   - 21일챌린지
