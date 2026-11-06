@@ -1,7 +1,9 @@
 ---
 import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import Comments from "../../../../../components/Comments.astro";
+import ChallengeTracker from "../../../../../components/ChallengeTracker.astro";
 import {
+  CHALLENGE_TAG,
   formatLongDate,
   getPostPath,
   getPosts,
@@ -51,6 +53,8 @@ const Content = post.Content as any;
     <div class="prose">
       <Content />
     </div>
+
+    {post.tags.includes(CHALLENGE_TAG) && <ChallengeTracker />}
 
     {
       (previous || next) && (

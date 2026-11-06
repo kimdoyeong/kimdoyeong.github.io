@@ -79,3 +79,6 @@ export function formatLongDate(date: string) {
   const [year, month, day] = date.split("-").map(Number);
   return `${year}년 ${month}월 ${day}일`;
 }
+
+// 21일 글쓰기 챌린지(임시). 이 태그가 붙은 글에 ChallengeTracker가 표시된다.
+export const CHALLENGE_TAG = "21일챌린지";
