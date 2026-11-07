@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 1050" width="1160" height="1050" font-family="Pretendard, 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrEvt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/>
+    </marker>
+    <style>
+      .title { font-size: 22px; font-weight: 700; fill: #0f172a; }
+      .pkg { font-size: 12px; font-weight: 600; }
+      .hdr { font-size: 15px; font-weight: 700; fill: #0f172a; }
+      .sub { font-size: 11.5px; fill: #475569; }
+      .lbl { font-size: 13px; fill: #1e293b; }
+      .lblE { font-size: 13px; fill: #6d28d9; font-weight: 600; }
+      .note { font-size: 12px; fill: #1e293b; }
+      .noteB { font-size: 12px; font-weight: 700; fill: #0f172a; }
+      .life { stroke: #94a3b8; stroke-width: 1.2; stroke-dasharray: 5 5; }
+      .call { stroke: #334155; stroke-width: 1.6; fill: none; marker-end: url(#arr); }
+      .ret { stroke: #334155; stroke-width: 1.6; fill: none; stroke-dasharray: 6 4; marker-end: url(#arr); }
+      .evt { stroke: #7c3aed; stroke-width: 1.8; fill: none; stroke-dasharray: 6 4; marker-end: url(#arrEvt); }
+      .small { font-size: 12.5px; fill: #1e293b; }
+    </style>
+  </defs>
+
+  <rect width="1160" height="1050" fill="#ffffff"/>
+  <text x="580" y="32" text-anchor="middle" class="title">pi -p "안녕" 실행 흐름</text>
+
+  <!-- package groups -->
+  <rect x="250" y="46" width="440" height="814" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-dasharray="6 4"/>
+  <text x="262" y="63" class="pkg" fill="#1d4ed8">coding-agent 패키지</text>
+  <rect x="700" y="46" width="230" height="814" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-dasharray="6 4"/>
+  <text x="712" y="63" class="pkg" fill="#c2410c">agent 패키지</text>
+
+  <!-- lifelines -->
+  <line x1="115" y1="128" x2="115" y2="780" class="life"/>
+  <line x1="350" y1="128" x2="350" y2="850" class="life"/>
+  <line x1="580" y1="128" x2="580" y2="850" class="life"/>
+  <line x1="815" y1="128" x2="815" y2="850" class="life"/>
+  <line x1="1045" y1="128" x2="1045" y2="850" class="life"/>
+
+  <!-- headers -->
+  <rect x="30" y="74" width="170" height="54" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <text x="115" y="97" text-anchor="middle" class="hdr">터미널</text>
+  <text x="115" y="116" text-anchor="middle" class="sub">사용자</text>
+
+  <rect x="265" y="74" width="170" height="54" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="350" y="97" text-anchor="middle" class="hdr">main.ts · main()</text>
+  <text x="350" y="116" text-anchor="middle" class="sub">CLI · 프린트 모드</text>
+
+  <rect x="495" y="74" width="170" height="54" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+  <text x="580" y="97" text-anchor="middle" class="hdr">AgentSession</text>
+  <text x="580" y="116" text-anchor="middle" class="sub">에이전트 세션</text>
+
+  <rect x="730" y="74" width="170" height="54" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="815" y="97" text-anchor="middle" class="hdr">Agent</text>
+  <text x="815" y="116" text-anchor="middle" class="sub">에이전트</text>
+
+  <rect x="960" y="74" width="170" height="54" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="1045" y="97" text-anchor="middle" class="hdr">LLM 모델</text>
+  <text x="1045" y="116" text-anchor="middle" class="sub">프로바이더 API</text>
+
+  <!-- 1 command -->
+  <text x="232" y="158" text-anchor="middle" class="lbl">① pi -p "안녕"</text>
+  <line x1="115" y1="167" x2="348" y2="167" class="call"/>
+
+  <!-- init note -->
+  <rect x="255" y="185" width="190" height="48" rx="6" fill="#ffffff" stroke="#2563eb"/>
+  <text x="350" y="205" text-anchor="middle" class="noteB">인자 파싱 · 각종 초기화</text>
+  <text x="350" y="223" text-anchor="middle" class="note">(설정, 모델, 도구, 확장 로드)</text>
+
+  <!-- 2 create session -->
+  <text x="465" y="263" text-anchor="middle" class="lbl">② 에이전트 세션 생성</text>
+  <line x1="350" y1="272" x2="578" y2="272" class="call"/>
+
+  <!-- 3 session holds agent -->
+  <text x="697" y="296" text-anchor="middle" class="lbl">③ Agent 생성 · 보유</text>
+  <line x1="580" y1="305" x2="813" y2="305" class="call"/>
+
+  <!-- 4 prompt to session -->
+  <text x="465" y="346" text-anchor="middle" class="lbl">④ 프롬프트 "안녕" 전달</text>
+  <line x1="350" y1="355" x2="578" y2="355" class="call"/>
+
+  <!-- preprocessing note -->
+  <rect x="485" y="372" width="190" height="64" rx="6" fill="#ffffff" stroke="#0d9488"/>
+  <text x="580" y="391" text-anchor="middle" class="noteB">프롬프트 전처리</text>
+  <text x="580" y="409" text-anchor="middle" class="note">슬래시 명령인가?</text>
+  <text x="580" y="426" text-anchor="middle" class="note">실행 중인 프롬프트가 있는가?</text>
+
+  <!-- 5 agent.prompt() -->
+  <text x="697" y="460" text-anchor="middle" class="lbl">⑤ prompt()</text>
+  <line x1="580" y1="469" x2="813" y2="469" class="call"/>
+
+  <!-- agent loop frame -->
+  <rect x="705" y="488" width="435" height="208" rx="4" fill="#fffbeb" fill-opacity="0.55" stroke="#b45309" stroke-width="1.4"/>
+  <path d="M705,488 h262 v16 l-10,10 h-252 z" fill="#fde68a" stroke="#b45309" stroke-width="1.4"/>
+  <text x="714" y="507" class="noteB">loop · 에이전트 루프 (도구 호출 없음 → 1회)</text>
+
+  <!-- 6 model call -->
+  <text x="930" y="537" text-anchor="middle" class="lbl">⑥ 대화 내역으로 모델 호출</text>
+  <line x1="815" y1="546" x2="1043" y2="546" class="call"/>
+
+  <!-- 7 response -->
+  <text x="930" y="569" text-anchor="middle" class="lbl">⑦ 응답</text>
+  <line x1="1045" y1="578" x2="817" y2="578" class="ret"/>
+  <text x="930" y="595" text-anchor="middle" class="note" fill="#475569">"안녕하세요. 무엇을 도와드릴까요?"</text>
+
+  <!-- message_end note -->
+  <rect x="720" y="606" width="190" height="44" rx="6" fill="#ffffff" stroke="#ea580c"/>
+  <text x="815" y="624" text-anchor="middle" class="noteB">message_end 발생</text>
+  <text x="815" y="641" text-anchor="middle" class="note">상태(messages)에 응답 추가</text>
+
+  <!-- tool check note -->
+  <rect x="720" y="659" width="190" height="28" rx="6" fill="#ffffff" stroke="#ea580c"/>
+  <text x="815" y="678" text-anchor="middle" class="note">도구 호출 없음 → 루프 종료</text>
+
+  <!-- 8 message_end event to print mode -->
+  <text x="520" y="620" text-anchor="middle" class="lblE">⑧ message_end 이벤트</text>
+  <line x1="720" y1="628" x2="352" y2="628" class="evt"/>
+
+  <!-- 9 print to terminal -->
+  <text x="232" y="660" text-anchor="middle" class="lblE">⑨ 화면 버퍼에 출력</text>
+  <line x1="350" y1="669" x2="117" y2="669" class="evt"/>
+  <text x="232" y="686" text-anchor="middle" class="sub">(프린트 모드 · 갱신된 상태)</text>
+
+  <!-- 10 agent_end -->
+  <text x="697" y="726" text-anchor="middle" class="lblE">⑩ agent_end</text>
+  <line x1="815" y1="735" x2="582" y2="735" class="evt"/>
+
+  <!-- persist note -->
+  <rect x="485" y="752" width="190" height="30" rx="6" fill="#ffffff" stroke="#0d9488"/>
+  <text x="580" y="772" text-anchor="middle" class="note">대화 기록 저장 (영속화)</text>
+
+  <!-- terminal output -->
+  <rect x="10" y="782" width="225" height="62" rx="8" fill="#0f172a"/>
+  <text x="22" y="805" font-family="Menlo, Consolas, monospace" font-size="12" fill="#94a3b8">$ pi -p "안녕"</text>
+  <text x="22" y="828" font-size="12" fill="#e2e8f0">안녕하세요. 무엇을 도와드릴까요?</text>
+
+  <!-- legend -->
+  <text x="20" y="900" class="noteB">범례</text>
+  <line x1="20" y1="922" x2="80" y2="922" class="call"/>
+  <text x="90" y="926" class="small">호출 · 전달</text>
+  <line x1="20" y1="950" x2="80" y2="950" class="ret"/>
+  <text x="90" y="954" class="small">응답</text>
+  <line x1="20" y1="978" x2="80" y2="978" class="evt"/>
+  <text x="90" y="982" class="small">이벤트</text>
+  <rect x="20" y="996" width="60" height="18" fill="#fffbeb" stroke="#b45309"/>
+  <text x="90" y="1010" class="small">루프 구간</text>
+
+  <!-- responsibilities -->
+  <rect x="250" y="880" width="440" height="150" rx="10" fill="#f0fdfa" stroke="#0d9488"/>
+  <text x="268" y="906" class="noteB" fill="#0f766e">AgentSession이 맡는 일</text>
+  <text x="268" y="932" class="small">• 프롬프트 전처리 (슬래시 명령, 실행 중 프롬프트 확인)</text>
+  <text x="268" y="955" class="small">• 대화 기록 영속화(저장) · 복원</text>
+  <text x="268" y="978" class="small">• 모델 변경, 긴 대화 요약(compact)</text>
+  <text x="268" y="1001" class="small">• 확장 기능 연결</text>
+
+  <rect x="700" y="880" width="440" height="150" rx="10" fill="#fff7ed" stroke="#ea580c"/>
+  <text x="718" y="906" class="noteB" fill="#c2410c">Agent가 맡는 일</text>
+  <text x="718" y="932" class="small">• 대화 내역(상태) 유지</text>
+  <text x="718" y="955" class="small">• 모델 호출, 도구 실행 및 결과를 모델에 전달</text>
+  <text x="718" y="978" class="small">• 이벤트 발생 (message_end, agent_end …)</text>
+  <text x="718" y="1001" class="small">• 명령: prompt() — 새 프롬프트 / continue() — 이어서 실행</text>
+</svg>
