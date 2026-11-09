@@ -1,0 +1,345 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import tokensSource from "../../../tokens.css?raw";
+
+// tokens.css를 그대로 읽어서 화면에 보여 준다. 토큰을 고치면 이 페이지도 같이 바뀐다.
+const tokens = new Map<string, string>();
+for (const [, name, value] of tokensSource.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
+  tokens.set(name, value.trim());
+}
+const byPrefix = (prefix: string) =>
+  [...tokens.entries()].filter(([name]) => name.startsWith(prefix));
+
+const resolve = (value: string): string => {
+  const ref = value.match(/^var\((--[\w-]+)\)$/);
+  return ref ? resolve(tokens.get(ref[1]) ?? value) : value;
+};
+
+const luminance = (hex: string) => {
+  const channels = hex
+    .slice(1)
+    .match(/../g)!
+    .map((part) => {
+      const c = parseInt(part, 16) / 255;
+      return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+};
+
+const contrastOnBg = (value: string) => {
+  const hex = resolve(value);
+  const bg = resolve(tokens.get("--color-bg") ?? "");
+  if (!/^#[0-9a-f]{6}$/i.test(hex) || !/^#[0-9a-f]{6}$/i.test(bg)) return null;
+  const [a, b] = [luminance(hex), luminance(bg)].sort((x, y) => y - x);
+  return (a + 0.05) / (b + 0.05);
+};
+
+const colorRoles: Record<string, string> = {
+  "--color-bg": "페이지 바탕. 깊은 보라.",
+  "--color-card": "카드 면. 반투명이라 뒤의 격자가 살짝 비친다.",
+  "--color-card-raised": "코드 블록, 표 머리처럼 한 단 올라온 면.",
+  "--color-ink": "본문 글자.",
+  "--color-muted": "보조 설명, 요약문.",
+  "--color-faint": "라벨, 캡션처럼 가장 약한 글자.",
+  "--color-rule": "구분선, 점선 테두리.",
+  "--color-grid": "바탕 48px 격자선.",
+  "--color-pink": "강조 1. 그림자, 목록 마커, 현재 위치.",
+  "--color-cyan": "강조 2. 링크, 날짜, 기본 칩.",
+  "--color-acid": "강조 3. 제목, 검출 라벨, 포커스.",
+  "--color-violet": "그림자 전용 보조색.",
+  "--color-focus": "키보드 포커스 링.",
+  "--color-selection": "텍스트 선택 영역.",
+};
+
+const colors = byPrefix("--color-").map(([name, value]) => ({
+  name,
+  value,
+  role: colorRoles[name] ?? "",
+  contrast: contrastOnBg(value),
+}));
+
+const fontSamples: Record<string, { label: string; sample: string }> = {
+  "--font-display": { label: "Display", sample: "DOYEONG 김도영" },
+  "--font-shade": { label: "Shade", sample: "DOYEONG" },
+  "--font-body": { label: "Body", sample: "생각을 기록하고 만들면서 배운다. Build, ship, learn." },
+  "--font-mono": { label: "Mono", sample: "2026.11.09 · const x = 42;" },
+};
+const fonts = byPrefix("--font-").map(([name, value]) => ({ name, value, ...fontSamples[name] }));
+
+const typeScale = byPrefix("--text-").reverse();
+const spaceScale = byPrefix("--space-");
+const shapeTokens = ["--border", "--shadow-offset", "--radius-sm", "--ease-out", "--dur-short"]
+  .filter((name) => tokens.has(name))
+  .map((name) => [name, tokens.get(name)!] as const);
+
+const pairings = [
+  { border: "acid", shadow: "pink", className: "card", note: "기본 카드" },
+  { border: "cyan", shadow: "violet", className: "card card--cyan", note: "정보, 이동" },
+  { border: "pink", shadow: "cyan", className: "card card--pink", note: "강조, 연락" },
+];
+---
+
+<PageLayout
+  title="디자인 시스템"
+  description="doyeong.dev를 이루는 색, 글꼴, 간격, 컴포넌트를 한곳에 모았습니다."
+>
+  <div class="ds">
+    <nav class="ds-toc" aria-label="디자인 시스템 목차">
+      <a class="chip" href="#principles">원칙</a>
+      <a class="chip" href="#color">색</a>
+      <a class="chip" href="#type">글꼴</a>
+      <a class="chip" href="#space">간격</a>
+      <a class="chip" href="#shape">형태와 움직임</a>
+      <a class="chip" href="#components">컴포넌트</a>
+    </nav>
+
+    <section class="ds-section" id="principles" aria-labelledby="principles-title">
+      <header class="ds-section__header">
+        <p class="home-section__kicker">01 / Principles</p>
+        <h2 id="principles-title">원칙</h2>
+      </header>
+      <ol class="ds-principles">
+        <li>
+          <strong>네온 아케이드</strong>
+          <span>깊은 보라 바탕 위에 핑크, 시안, 애시드 세 가지 네온만 쓴다. 그라데이션과 글로우는 쓰지 않는다.</span>
+        </li>
+        <li>
+          <strong>딱딱한 그림자</strong>
+          <span>흐림 없는 오프셋 그림자로 깊이를 만든다. 테두리와 그림자는 항상 다른 색이다.</span>
+        </li>
+        <li>
+          <strong>검출 박스</strong>
+          <span>카드 위쪽 테두리에 붙는 라벨은 사물 인식 박스에서 가져왔다. 무엇을 담은 상자인지 먼저 말한다.</span>
+        </li>
+        <li>
+          <strong>한글이 먼저</strong>
+          <span>단어 단위 줄바꿈(<code>keep-all</code>)을 기본으로 두고, 한글 제목은 Black Han Sans로 쓴다.</span>
+        </li>
+      </ol>
+    </section>
+
+    <section class="ds-section" id="color" aria-labelledby="color-title">
+      <header class="ds-section__header">
+        <p class="home-section__kicker">02 / Color</p>
+        <h2 id="color-title">색</h2>
+        <p class="ds-section__lede">
+          대비는 <code>--color-bg</code> 위에서 잰 값입니다. 4.5:1 이상이면 본문 글자에 쓸 수 있습니다.
+        </p>
+      </header>
+      <ul class="ds-swatches">
+        {
+          colors.map(({ name, value, role, contrast }) => (
+            <li class="ds-swatch">
+              <span class="ds-swatch__chip" style={`background: var(${name})`} aria-hidden="true" />
+              <code class="ds-swatch__name">{name}</code>
+              <span class="ds-swatch__value">{value}</span>
+              {role && <span class="ds-swatch__role">{role}</span>}
+              {contrast !== null && name !== "--color-bg" && (
+                <span class:list={["ds-swatch__contrast", { "is-low": contrast < 4.5 }]}>
+                  {contrast.toFixed(1)}:1{contrast < 4.5 ? " · 장식용" : ""}
+                </span>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="ds-section" id="type" aria-labelledby="type-title">
+      <header class="ds-section__header">
+        <p class="home-section__kicker">03 / Typography</p>
+        <h2 id="type-title">글꼴</h2>
+      </header>
+      <ul class="ds-fonts">
+        {
+          fonts.map(({ name, value, label, sample }) => (
+            <li class="ds-font">
+              <div class="ds-font__meta">
+                <span class="ds-font__label">{label}</span>
+                <code>{name}</code>
+              </div>
+              <p class="ds-font__sample" style={`font-family: var(${name})`}>{sample}</p>
+              <span class="ds-font__stack">{value}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h3 class="ds-subtitle">크기 단계</h3>
+      <p class="ds-section__lede">1.25 배율(Major Third)로 커집니다.</p>
+      <ul class="ds-scale">
+        {
+          typeScale.map(([name, value]) => (
+            <li>
+              <code>{name.replace("--text-", "")}</code>
+              <span class="ds-scale__value">{value}</span>
+              <span class="ds-scale__sample" style={`font-size: var(${name})`}>
+                다람쥐 헌 쳇바퀴에 타고파
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="ds-section" id="space" aria-labelledby="space-title">
+      <header class="ds-section__header">
+        <p class="home-section__kicker">04 / Spacing</p>
+        <h2 id="space-title">간격</h2>
+      </header>
+      <ul class="ds-space">
+        {
+          spaceScale.map(([name, value]) => (
+            <li>
+              <code>{name.replace("--space-", "")}</code>
+              <span class="ds-space__value">{value}</span>
+              <span class="ds-space__bar" style={`inline-size: var(${name})`} aria-hidden="true" />
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="ds-section" id="shape" aria-labelledby="shape-title">
+      <header class="ds-section__header">
+        <p class="home-section__kicker">05 / Shape &amp; motion</p>
+        <h2 id="shape-title">형태와 움직임</h2>
+      </header>
+      <dl class="ds-tokens">
+        {
+          shapeTokens.map(([name, value]) => (
+            <div>
+              <dt><code>{name}</code></dt>
+              <dd>{value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <h3 class="ds-subtitle">테두리와 그림자 짝</h3>
+      <p class="ds-section__lede">테두리 색과 그림자 색은 아래 세 가지 조합만 씁니다.</p>
+      <div class="ds-pairings">
+        {
+          pairings.map(({ border, shadow, className, note }) => (
+            <div class={className}>
+              <span class="box-label">
+                {border} <span>/ {shadow}</span>
+              </span>
+              <p>{note}</p>
+              <code class="ds-pairings__class">.{className.split(" ").at(-1)}</code>
+            </div>
+          ))
+        }
+      </div>
+
+      <h3 class="ds-subtitle">눌림</h3>
+      <p class="ds-section__lede">
+        올리면 2px 떠오르고, 누르면 그림자 자리까지 내려앉습니다. 움직임 줄이기 설정에서는 전환 효과를 끕니다.
+      </p>
+      <div class="ds-row">
+        <a class="chip" href="#shape">마우스를 올려 보기</a>
+      </div>
+    </section>
+
+    <section class="ds-section" id="components" aria-labelledby="components-title">
+      <header class="ds-section__header">
+        <p class="home-section__kicker">06 / Components</p>
+        <h2 id="components-title">컴포넌트</h2>
+      </header>
+
+      <div class="ds-specimen">
+        <div class="ds-specimen__head">
+          <h3>Chip</h3>
+          <code>.chip</code>
+        </div>
+        <p class="ds-specimen__note">메뉴, 이동 버튼. 고정 폭 대문자로 씁니다.</p>
+        <div class="ds-row">
+          <a class="chip" href="#components">기본</a>
+          <a class="chip chip--pink" href="#components">--pink</a>
+          <a class="chip chip--acid" href="#components">--acid</a>
+          <a class="chip" href="#components" aria-current="page">현재 위치</a>
+        </div>
+      </div>
+
+      <div class="ds-specimen">
+        <div class="ds-specimen__head">
+          <h3>Card · Box label</h3>
+          <code>.card &gt; .box-label</code>
+        </div>
+        <p class="ds-specimen__note">라벨은 위쪽 테두리 바깥에 붙고, 흐린 뒷부분에 개수나 상태를 적습니다.</p>
+        <div class="card">
+          <span class="box-label">PROJECT <span>· 0.98</span></span>
+          <h2>카드 제목</h2>
+          <p class="card__lede">카드 안의 첫 문단은 muted 색으로 씁니다.</p>
+          <ul class="stack">
+            <li>Astro</li>
+            <li>TypeScript</li>
+            <li>GitHub Pages</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ds-specimen">
+        <div class="ds-specimen__head">
+          <h3>Stack · Tag list</h3>
+          <code>.stack · .tag-list</code>
+        </div>
+        <div class="ds-stack">
+          <ul class="stack stack--small">
+            <li>React</li>
+            <li>Node.js</li>
+            <li>PostgreSQL</li>
+          </ul>
+          <ul class="tag-list">
+            <li><a href="/tags/">회고</a></li>
+            <li><a href="/tags/">AI</a></li>
+            <li><a href="/tags/">개발</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ds-specimen">
+        <div class="ds-specimen__head">
+          <h3>Post row</h3>
+          <code>.post-row</code>
+        </div>
+        <ul class="post-list">
+          <li>
+            <article class="post-row">
+              <time datetime="2026-11-09">2026.11.09</time>
+              <div>
+                <h3><a href="/writing/">글 제목이 여기에 들어갑니다</a></h3>
+                <p>요약은 62자 폭에서 줄을 바꿉니다.</p>
+              </div>
+              <ul class="tag-list">
+                <li>예시</li>
+              </ul>
+            </article>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ds-specimen">
+        <div class="ds-specimen__head">
+          <h3>Prose</h3>
+          <code>.prose</code>
+        </div>
+        <div class="prose ds-prose">
+          <h2>본문 제목</h2>
+          <p>
+            본문에서 <strong>굵은 글자</strong>는 애시드, <a href="#components">링크</a>는 시안,
+            <code>인라인 코드</code>는 한 단 올라온 면에 씁니다.
+          </p>
+          <ul>
+            <li>목록 마커는 핑크입니다.</li>
+            <li>목록 사이 간격은 <code>--space-xs</code>입니다.</li>
+          </ul>
+          <blockquote>
+            <p>인용문은 핑크 테두리에 애시드 그림자를 씁니다.</p>
+          </blockquote>
+          <pre><code>{`:root {\n  --color-pink: #ff2bd6;\n}`}</code></pre>
+        </div>
+      </div>
+    </section>
+  </div>
+</PageLayout>
