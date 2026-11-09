@@ -61,14 +61,17 @@ const cardTones = ["", "card--cyan", "card--pink"];
             </span>
             <div class="project__meta">
               <span>{project.period}</span>
+              <span aria-hidden="true">·</span>
               <span>{project.role}</span>
               {project.status && <strong>{project.status}</strong>}
             </div>
             <h3>{project.name}</h3>
             <p class="project__summary">{project.summary}</p>
-            <ul class="project__points">
-              {project.points.map((point) => <li>{point}</li>)}
-            </ul>
+            {project.points.length > 0 && (
+              <ul class="project__points">
+                {project.points.map((point) => <li>{point}</li>)}
+              </ul>
+            )}
             <ul class="stack stack--small" aria-label="기술">
               {project.stack.map((item) => <li>{item}</li>)}
             </ul>

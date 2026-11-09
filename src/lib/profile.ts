@@ -61,9 +61,17 @@ export const projects: Project[] = [
     link: { href: "https://github.com/kimdoyeong/epub-translator", label: "코드" },
   },
   {
+    name: "Waterflow",
+    period: "2020",
+    role: "EDCAN",
+    summary: "코로나19 매점 거리두기를 위한 주문·배달 공유 서비스",
+    points: [],
+    stack: ["React", "React Native", "Firebase"],
+  },
+  {
     name: "React 교육",
     period: "2020",
-    role: "교내 동아리",
+    role: "선린인터넷고 교내 동아리 EDCAN·IWOP",
     summary: "Web/Server 수업 교재와 강의",
     points: ["41쪽 분량의 React 교재 THE BASIC OF REACT를 혼자 쓰고 직접 강의"],
     stack: ["React"],
@@ -80,26 +88,48 @@ export const milestones: Milestone[] = [
     year: "2019",
     items: [
       { title: "선린인터넷고등학교 입학", detail: "소프트웨어과" },
-      { title: "다수 대회 수상" },
+      {
+        title: "교내 개발대회 11회 수상",
+        detail:
+          "IoT아이디어공모전 금상(2019), 교내해커톤 은상(2021, 27팀 중 2위), 창의아이디어 경진대회 은상(2019), 고등해커페스티벌 동상 2회 외",
+      },
+    ],
+  },
+  {
+    year: "2021",
+    items: [
+      {
+        title: "프로그라운드 풀스택 개발 인턴",
+        detail:
+          "2021.12 – 2022.02 · 러닝 서비스 React Native 앱의 커뮤니티 화면, 달리기 기록 화면 등 다수 기능 구현, 버그 수정 (React Native, NestJS, Express)",
+      },
     ],
   },
   {
     year: "2022",
-    items: [{ title: "서강대학교 입학" }],
+    items: [
+      { title: "선린인터넷고등학교 졸업", detail: "소프트웨어과" },
+      { title: "서강대학교 경영학부 입학" },
+    ],
   },
 ];
 
 export const skills = [
   "TypeScript",
   "React",
+  "React Native",
   "Svelte",
+  "TanStack",
   "Node.js",
   "Koa",
   "Express",
+  "NestJS",
+  "Drizzle",
   "Bun · Hono",
   "Electron",
   "Tauri",
   "Docker",
+  "AWS",
 ];
 
 export const hobbies = ["커피", "테크", "오디오", "게임"];
