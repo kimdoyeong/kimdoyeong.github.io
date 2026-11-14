@@ -4,6 +4,10 @@ description: 한 발짝 떨어지니 보이는 부분
 publishedAt: "2026-11-06"
 tags:
   - 21일챌린지
+  - 프로덕트
+  - 기획
+  - 독서
+  - AI
 readingTime: 5
 ---
 

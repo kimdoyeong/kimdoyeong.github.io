@@ -4,6 +4,11 @@ description: 《아이디어 불패의 법칙》을 읽고 연습
 publishedAt: "2026-11-12"
 tags:
   - 21일챌린지
+  - 프로덕트
+  - 기획
+  - 독서
+  - 프리토타이핑
+  - 커피
 readingTime: 5
 ---
 

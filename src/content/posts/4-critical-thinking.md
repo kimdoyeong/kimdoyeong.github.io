@@ -4,6 +4,10 @@ description: 바이브코더 홍길동 씨가 곤경에 빠진 이유는?
 publishedAt: "2026-11-09"
 tags:
   - 21일챌린지
+  - AI
+  - 에이전트
+  - 바이브코딩
+  - 비판적사고
 readingTime: 5
 ---
 

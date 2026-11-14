@@ -4,6 +4,10 @@ description: pi를 간단히 분석해보자
 publishedAt: "2026-11-07"
 tags:
   - 21일챌린지
+  - AI
+  - 에이전트
+  - 코드읽기
+  - 오픈소스
 readingTime: 5
 ---
 

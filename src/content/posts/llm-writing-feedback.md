@@ -5,6 +5,7 @@ publishedAt: "2026-08-20"
 tags:
   - 글쓰기
   - AI
+  - LLM
 readingTime: 2
 ---
 

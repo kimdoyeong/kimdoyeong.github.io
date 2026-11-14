@@ -13,9 +13,15 @@ function addDays(date: string, days: number) {
   return d.toISOString().slice(0, 10);
 }
 
+// 시작 글(0/21)은 1일차 본편과 날짜가 같다. 본편이 먼저 잡히도록 시작 글을 맨 뒤로 보낸다.
+const START_POST_SLUG = "0-challenge-start";
+const challengePosts = getPosts()
+  .filter((post) => post.tags.includes(CHALLENGE_TAG))
+  .sort((a, b) => Number(a.slug === START_POST_SLUG) - Number(b.slug === START_POST_SLUG));
+
 const postsByDate = new Map<string, string>();
-for (const post of getPosts()) {
-  if (post.tags.includes(CHALLENGE_TAG) && !postsByDate.has(post.publishedAt)) {
+for (const post of challengePosts) {
+  if (!postsByDate.has(post.publishedAt)) {
     postsByDate.set(post.publishedAt, getPostPath(post));
   }
 }

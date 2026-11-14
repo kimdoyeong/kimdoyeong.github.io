@@ -296,10 +296,26 @@ main {
   letter-spacing: 0.3em;
 }
 
+.hero__pitch {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-md);
+}
+
 .hero__lede {
+  display: grid;
+  font-size: clamp(var(--text-md), 3.6vw, var(--text-xl));
+  font-weight: 700;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.hero__sub {
   max-width: 44ch;
-  font-size: clamp(var(--text-base), 2.4vw, var(--text-md));
+  color: var(--color-muted);
+  font-size: var(--text-base);
   line-height: 1.6;
+  word-break: keep-all;
 }
 
 .hero__lede em {

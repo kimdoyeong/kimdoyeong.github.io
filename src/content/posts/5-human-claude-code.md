@@ -4,6 +4,10 @@ description: 인간 Claude Code는 진짜 Claude Code와 무엇이 달랐을까
 publishedAt: "2026-11-10"
 tags:
   - 21일챌린지
+  - AI
+  - 회고
+  - 전문성
+  - 창의성
 readingTime: 5
 ---
 

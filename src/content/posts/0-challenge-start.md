@@ -4,6 +4,8 @@ description: 21일 연속 글 올리기 챌린지를 시작합니다.
 publishedAt: "2026-11-06"
 tags:
   - 21일챌린지
+  - 글쓰기
+  - 블로그
 readingTime: 3
 ---
 

@@ -5,6 +5,7 @@ publishedAt: "2026-08-20"
 tags:
   - 글쓰기
   - 학습
+  - 블로그
 readingTime: 3
 ---
 > 이 글은 [Blog about things you don't understand yet](https://www.seangoedecke.com/blog-about-things-you-dont-understand-yet/)을 읽고 작성했다.

@@ -4,6 +4,12 @@ description: AI 시대에 소프트웨어 엔지니어링이 덕목이 될 것 �
 publishedAt: "2026-11-05"
 tags:
   - 회고
+  - 프로젝트
+  - AI
+  - 설계
+  - 기획
+  - TDD
+  - 셀프호스팅
 readingTime: 10
 ---
 

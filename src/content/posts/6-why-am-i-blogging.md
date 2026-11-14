@@ -4,6 +4,9 @@ description: 거의 아무 말 대잔치
 publishedAt: "2026-11-11"
 tags:
   - 21일챌린지
+  - 블로그
+  - 글쓰기
+  - 독서
 readingTime: 5
 ---
 

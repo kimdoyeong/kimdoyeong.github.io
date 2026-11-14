@@ -4,6 +4,9 @@ description: 여전히 사람의 개입이 필요한 이유
 publishedAt: "2026-08-27"
 tags:
   - AI
+  - 에이전트
+  - 바이브코딩
+  - 설계
 readingTime: 5
 ---
 
