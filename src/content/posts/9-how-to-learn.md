@@ -1,7 +1,7 @@
 ---
 title: "학습을 하는 학습"
 description: 학습을 하는 방법, 즐겁게 하자.
-publishedAt: "2026-11-13"
+publishedAt: "2026-11-14"
 tags:
   - 21일챌린지
   - 학습
