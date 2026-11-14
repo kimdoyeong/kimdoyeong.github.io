@@ -1,6 +1,6 @@
 ---
 title: "학습을 하는 학습"
-description: 거의 아무 말 대잔치
+description: 학습을 하는 방법, 즐겁게 하자.
 publishedAt: "2026-11-13"
 tags:
   - 21일챌린지
