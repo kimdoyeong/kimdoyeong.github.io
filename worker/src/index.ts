@@ -12,6 +12,7 @@ const MAX_BODY_BYTES = 32_000;
 const MAX_MESSAGES = 11;
 const MAX_QUESTION_LENGTH = 300;
 const MAX_ANSWER_LENGTH = 4_000;
+const MAX_PAGE_LENGTH = 200;
 
 const SESSION_TTL_MS = 30 * 60 * 1000;
 const CONTEXT_TTL_MS = 5 * 60 * 1000;
@@ -233,11 +234,12 @@ function recordQuestion(
   messages: Message[],
   outcome: Outcome,
   answer: string | null,
+  page: string | null,
 ) {
   const country = (request.cf?.country as string | undefined) ?? null;
   ctx.waitUntil(
     env.DB.prepare(
-      "INSERT INTO questions (created_at, day, question, turn, outcome, country, answer) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO questions (created_at, day, question, turn, outcome, country, answer, page) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
     )
       .bind(
         new Date().toISOString(),
@@ -247,6 +249,7 @@ function recordQuestion(
         outcome,
         country,
         answer,
+        page,
       )
       .run()
       .catch((error: unknown) => console.error("question log failed", error)),
@@ -340,6 +343,11 @@ async function handleAsk(request: Request, env: Env, ctx: ExecutionContext, cors
   }
   const messages = parseMessages(body?.messages);
   if (!messages) return json(400, "invalid");
+  // 통계용 값이라 형식이 맞지 않으면 버리기만 하고 요청은 그대로 처리한다.
+  const page =
+    typeof body.page === "string" && body.page.startsWith("/") && body.page.length <= MAX_PAGE_LENGTH
+      ? body.page
+      : null;
 
   const ip = clientKey(request);
   if (!(await env.BURST.limit({ key: ip })).success) return json(429, "rate");
@@ -368,20 +376,20 @@ async function handleAsk(request: Request, env: Env, ctx: ExecutionContext, cors
   if (cacheKey) {
     const cached = await budget.getAnswer(day, cacheKey);
     if (cached) {
-      recordQuestion(request, env, ctx, day, messages, "cached", cached);
+      recordQuestion(request, env, ctx, day, messages, "cached", cached, page);
       return new Response(cached, { headers });
     }
   }
 
   const taken = await budget.take(day, ip, Number(env.IP_DAILY_LIMIT), Number(env.DAILY_LIMIT));
   if (taken !== "ok") {
-    recordQuestion(request, env, ctx, day, messages, taken, null);
+    recordQuestion(request, env, ctx, day, messages, taken, null, page);
     return json(429, taken);
   }
 
   // 답변이 끝난 뒤에 질문과 답변을 한 행으로 남긴다.
   const answer = streamAnswer(env, ctx, context.system, messages, async (sent, complete) => {
-    recordQuestion(request, env, ctx, day, messages, "answered", sent);
+    recordQuestion(request, env, ctx, day, messages, "answered", sent, page);
     if (cacheKey && complete) await budget.putAnswer(cacheKey, sent);
   });
   return new Response(answer, { headers });
