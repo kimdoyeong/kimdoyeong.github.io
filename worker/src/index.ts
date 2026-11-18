@@ -232,11 +232,12 @@ function recordQuestion(
   day: string,
   messages: Message[],
   outcome: Outcome,
+  answer: string | null,
 ) {
   const country = (request.cf?.country as string | undefined) ?? null;
   ctx.waitUntil(
     env.DB.prepare(
-      "INSERT INTO questions (created_at, day, question, turn, outcome, country) VALUES (?, ?, ?, ?, ?, ?)",
+      "INSERT INTO questions (created_at, day, question, turn, outcome, country, answer) VALUES (?, ?, ?, ?, ?, ?, ?)",
     )
       .bind(
         new Date().toISOString(),
@@ -245,6 +246,7 @@ function recordQuestion(
         (messages.length + 1) / 2,
         outcome,
         country,
+        answer,
       )
       .run()
       .catch((error: unknown) => console.error("question log failed", error)),
@@ -256,7 +258,8 @@ function streamAnswer(
   ctx: ExecutionContext,
   system: string,
   messages: Message[],
-  onComplete: (answer: string) => Promise<void>,
+  // 방문자에게 보낸 글과, 답변이 끝까지 정상적으로 만들어졌는지를 받는다.
+  onFinish: (sent: string, complete: boolean) => Promise<void>,
 ) {
   const client = new Anthropic({
     apiKey: env.ANTHROPIC_API_KEY,
@@ -280,6 +283,8 @@ function streamAnswer(
   ctx.waitUntil(
     (async () => {
       let answer = "";
+      let fallback = false;
+      let complete = false;
       try {
         for await (const event of stream) {
           if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
@@ -291,9 +296,10 @@ function streamAnswer(
         console.log("usage", JSON.stringify({ stop: final.stop_reason, ...final.usage }));
         if (answer.trim().length === 0) {
           // 거절(stop_reason: "refusal")을 포함해 본문 없이 끝난 경우.
+          fallback = true;
           await writer.write(encoder.encode(FALLBACK_ANSWER));
-        } else if (final.stop_reason === "end_turn") {
-          await onComplete(answer);
+        } else {
+          complete = final.stop_reason === "end_turn";
         }
       } catch (error) {
         // 방문자가 창을 닫아 쓰기가 실패한 경우에도 여기로 온다. 생성을 멈춰 토큰을 아낀다.
@@ -306,10 +312,14 @@ function streamAnswer(
           console.error("stream failed", error);
         }
         if (answer.length === 0) {
+          fallback = true;
           await writer.write(encoder.encode(FALLBACK_ANSWER)).catch(() => {});
         }
       } finally {
         await writer.close().catch(() => {});
+        await onFinish(fallback ? FALLBACK_ANSWER : answer, complete).catch((error: unknown) =>
+          console.error("finish failed", error),
+        );
       }
     })(),
   );
@@ -358,17 +368,21 @@ async function handleAsk(request: Request, env: Env, ctx: ExecutionContext, cors
   if (cacheKey) {
     const cached = await budget.getAnswer(day, cacheKey);
     if (cached) {
-      recordQuestion(request, env, ctx, day, messages, "cached");
+      recordQuestion(request, env, ctx, day, messages, "cached", cached);
       return new Response(cached, { headers });
     }
   }
 
   const taken = await budget.take(day, ip, Number(env.IP_DAILY_LIMIT), Number(env.DAILY_LIMIT));
-  recordQuestion(request, env, ctx, day, messages, taken === "ok" ? "answered" : taken);
-  if (taken !== "ok") return json(429, taken);
+  if (taken !== "ok") {
+    recordQuestion(request, env, ctx, day, messages, taken, null);
+    return json(429, taken);
+  }
 
-  const answer = streamAnswer(env, ctx, context.system, messages, async (text) => {
-    if (cacheKey) await budget.putAnswer(cacheKey, text);
+  // 답변이 끝난 뒤에 질문과 답변을 한 행으로 남긴다.
+  const answer = streamAnswer(env, ctx, context.system, messages, async (sent, complete) => {
+    recordQuestion(request, env, ctx, day, messages, "answered", sent);
+    if (cacheKey && complete) await budget.putAnswer(cacheKey, sent);
   });
   return new Response(answer, { headers });
 }
