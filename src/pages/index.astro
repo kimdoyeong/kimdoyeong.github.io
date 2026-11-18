@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostList from "../components/PostList.astro";
+import { ASK_ENABLED, ASK_MAX_QUESTION_LENGTH, ASK_SUGGESTIONS } from "../lib/ask";
 import { getPosts } from "../lib/posts";
 import { hobbies, milestones, projects, skills } from "../lib/profile";
 
@@ -31,6 +32,40 @@ const cardTones = ["", "card--cyan", "card--pink"];
         초등학교 시절 컴퓨터에 감전된 뒤, 쓰고 싶은 건 직접 만들어 왔습니다.
       </p>
     </div>
+
+    {
+      ASK_ENABLED && (
+        <div class="hero-ask" data-ask-reveal hidden>
+          <form class="hero-ask__form" data-ask-form>
+            <span class="box-label">
+              ask_ai <span>beta</span>
+            </span>
+            <label class="ask-dock__label" for="hero-ask-input">
+              AI에게 질문
+            </label>
+            <input
+              id="hero-ask-input"
+              name="question"
+              type="text"
+              autocomplete="off"
+              enterkeyhint="send"
+              maxlength={ASK_MAX_QUESTION_LENGTH}
+              placeholder="김도영에 대해 물어보세요"
+            />
+            <button type="submit">질문</button>
+          </form>
+          <ul class="hero-ask__suggestions">
+            {ASK_SUGGESTIONS.map((question) => (
+              <li>
+                <button type="button" data-ask-question={question}>
+                  {question}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
 
     <div class="hero__actions">
       <a class="chip chip--acid" href="/story/">개발 기록 읽기 →</a>

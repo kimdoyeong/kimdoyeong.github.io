@@ -17,6 +17,8 @@ interface PostModule {
 
 export interface Post extends PostFrontmatter {
   slug: string;
+  /** 확장자를 뺀 원본 파일 이름. */
+  file: string;
   tags: string[];
   Content: MarkdownContent;
 }
@@ -46,6 +48,7 @@ function parsePost(path: string, module: PostModule): Post {
   return {
     ...frontmatter,
     slug: frontmatter.slug ?? filename,
+    file: filename,
     tags: frontmatter.tags ?? [],
     Content,
   };

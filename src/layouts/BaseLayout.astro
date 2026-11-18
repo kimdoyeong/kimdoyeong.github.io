@@ -1,6 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import AskDock from "../components/AskDock.astro";
 import { SITE_DESCRIPTION, SITE_TITLE, UMAMI_WEBSITE_ID } from "../lib/site";
 import "../../assets/css/styles.css";
 
@@ -55,5 +56,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       </main>
       <Footer />
     </div>
+    <AskDock />
   </body>
 </html>
