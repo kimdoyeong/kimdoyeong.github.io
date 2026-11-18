@@ -1,7 +1,7 @@
 ---
 title: "FDE가 뭔데?"
 description: 쉽게 말해 파병이라고 보면 된다.
-publishedAt: "2026-11-16"
+publishedAt: "2026-11-17"
 tags:
   - 21일챌린지
   - FDE
