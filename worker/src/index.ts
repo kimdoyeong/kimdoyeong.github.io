@@ -222,6 +222,35 @@ async function verifyTurnstile(env: Env, token: unknown, ip: string) {
   return ((await response.json()) as { success?: boolean }).success === true;
 }
 
+type Outcome = "answered" | "cached" | "ip_daily" | "global_daily";
+
+/** 통계용 질문 기록. 응답을 늦추지 않도록 뒤에서 쓰고, 실패해도 답변에는 영향을 주지 않는다. */
+function recordQuestion(
+  request: Request,
+  env: Env,
+  ctx: ExecutionContext,
+  day: string,
+  messages: Message[],
+  outcome: Outcome,
+) {
+  const country = (request.cf?.country as string | undefined) ?? null;
+  ctx.waitUntil(
+    env.DB.prepare(
+      "INSERT INTO questions (created_at, day, question, turn, outcome, country) VALUES (?, ?, ?, ?, ?, ?)",
+    )
+      .bind(
+        new Date().toISOString(),
+        day,
+        messages[messages.length - 1].content,
+        (messages.length + 1) / 2,
+        outcome,
+        country,
+      )
+      .run()
+      .catch((error: unknown) => console.error("question log failed", error)),
+  );
+}
+
 function streamAnswer(
   env: Env,
   ctx: ExecutionContext,
@@ -328,10 +357,14 @@ async function handleAsk(request: Request, env: Env, ctx: ExecutionContext, cors
       : undefined;
   if (cacheKey) {
     const cached = await budget.getAnswer(day, cacheKey);
-    if (cached) return new Response(cached, { headers });
+    if (cached) {
+      recordQuestion(request, env, ctx, day, messages, "cached");
+      return new Response(cached, { headers });
+    }
   }
 
   const taken = await budget.take(day, ip, Number(env.IP_DAILY_LIMIT), Number(env.DAILY_LIMIT));
+  recordQuestion(request, env, ctx, day, messages, taken === "ok" ? "answered" : taken);
   if (taken !== "ok") return json(429, taken);
 
   const answer = streamAnswer(env, ctx, context.system, messages, async (text) => {
