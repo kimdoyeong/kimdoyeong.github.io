@@ -2,5 +2,9 @@
 ANTHROPIC_API_KEY=sk-ant-...
 # 항상 통과하는 Cloudflare 공식 테스트 시크릿.
 TURNSTILE_SECRET=1x0000000000000000000000000000000AA
-CONTEXT_URL=http://localhost:4321/ai-context.json
+CONTEXT_TOKEN=dev
 ALLOWED_ORIGINS=http://localhost:4321
+
+# 로컬 Worker에는 컨텍스트를 직접 올려야 한다 (사이트와 Worker를 둘 다 띄운 뒤):
+#   curl -s localhost:4321/ai-context.json | curl -X PUT localhost:8787/context \
+#     -H "Authorization: Bearer dev" --data-binary @-

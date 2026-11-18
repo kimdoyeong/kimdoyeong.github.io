@@ -1,5 +1,6 @@
 // doyeong.dev "AI에게 묻기" 백엔드.
 // 요청 한 건이 API에 닿기 전에 거치는 순서: 출처 → 입력 형식 → 분당 제한 → 사람 확인 → 캐시 → 일일 예산.
+// 답변의 근거가 되는 컨텍스트는 사이트 배포 워크플로가 PUT /context 로 올린다.
 import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
 
@@ -14,7 +15,7 @@ const MAX_ANSWER_LENGTH = 4_000;
 
 const SESSION_TTL_MS = 30 * 60 * 1000;
 const CONTEXT_TTL_MS = 5 * 60 * 1000;
-// 컨텍스트가 이보다 커지면 통째로 넣는 방식을 다시 설계해야 한다. 조용히 자르지 않고 멈춘다.
+// 컨텍스트가 이보다 커지면 통째로 넣는 방식을 다시 설계해야 한다.
 const MAX_CONTEXT_CHARS = 300_000;
 
 const INSTRUCTIONS = `You are the AI guide on doyeong.dev, the personal site of 김도영 (Doyeong Kim), a developer. Visitors ask you about him. Everything you know about him is in the documents below, which are his published profile, development story, and blog posts.
@@ -34,14 +35,28 @@ const FALLBACK_ANSWER = "지금은 답변을 만들지 못했습니다. 잠시 �
 type Message = { role: "user" | "assistant"; content: string };
 type BudgetResult = "ok" | "ip_daily" | "global_daily";
 
-/** 일일 질문 예산과 추천 질문 답변 캐시. 인스턴스 하나가 모든 요청을 순서대로 처리한다. */
+/** 일일 질문 예산, 추천 질문 답변 캐시, 사이트 컨텍스트. 인스턴스 하나가 모든 요청을 순서대로 처리한다. */
 export class Budget extends DurableObject<Env> {
-  /** 날짜가 바뀌면 카운터와 캐시를 모두 비운다. */
+  /** 날짜가 바뀌면 카운터와 답변 캐시를 비운다. 컨텍스트는 남긴다. */
   private async rollover(day: string) {
-    if ((await this.ctx.storage.get<string>("day")) !== day) {
-      await this.ctx.storage.deleteAll();
-      await this.ctx.storage.put("day", day);
+    if ((await this.ctx.storage.get<string>("day")) === day) return;
+    for (const prefix of ["count:", "answer:"]) {
+      for (;;) {
+        // delete()는 한 번에 128개까지만 받는다.
+        const keys = [...(await this.ctx.storage.list({ prefix, limit: 128 })).keys()];
+        if (keys.length === 0) break;
+        await this.ctx.storage.delete(keys);
+      }
     }
+    await this.ctx.storage.put("day", day);
+  }
+
+  async getContext() {
+    return this.ctx.storage.get<StoredContext>("context");
+  }
+
+  async putContext(context: StoredContext) {
+    await this.ctx.storage.put("context", context);
   }
 
   async take(day: string, ip: string, ipLimit: number, globalLimit: number): Promise<BudgetResult> {
@@ -65,6 +80,11 @@ export class Budget extends DurableObject<Env> {
   }
 }
 
+interface StoredContext {
+  context: string;
+  suggestions: string[];
+}
+
 interface SiteContext {
   system: string;
   suggestions: Set<string>;
@@ -79,35 +99,57 @@ async function sha256(text: string) {
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
+function parseContext(body: unknown): StoredContext | undefined {
+  if (typeof body !== "object" || body === null) return undefined;
+  const { context, suggestions } = body as Record<string, unknown>;
+  if (typeof context !== "string" || context.length === 0) return undefined;
+  // 조용히 자르지 않는다. 넘치면 올리는 쪽이 실패를 보게 한다.
+  if (context.length > MAX_CONTEXT_CHARS) return undefined;
+  return {
+    context,
+    suggestions: Array.isArray(suggestions)
+      ? suggestions.filter((item): item is string => typeof item === "string")
+      : [],
+  };
+}
+
 async function loadContext(env: Env): Promise<SiteContext | undefined> {
   if (cachedContext && Date.now() - cachedContext.loadedAt < CONTEXT_TTL_MS) return cachedContext;
 
-  try {
-    const response = await fetch(env.CONTEXT_URL);
-    if (!response.ok) throw new Error(`context fetch ${response.status}`);
-    const body = (await response.json()) as { context?: unknown; suggestions?: unknown };
-    if (typeof body.context !== "string" || body.context.length === 0) {
-      throw new Error("context missing");
-    }
-    if (body.context.length > MAX_CONTEXT_CHARS) {
-      throw new Error(`context too large: ${body.context.length} chars`);
-    }
-    const suggestions = Array.isArray(body.suggestions)
-      ? body.suggestions.filter((item): item is string => typeof item === "string")
-      : [];
-    // 같은 내용이면 바이트까지 같아야 프롬프트 캐시가 유지된다. 시각 같은 가변 값은 넣지 않는다.
-    const system = `${INSTRUCTIONS}\n\n<documents>\n${body.context}\n</documents>`;
-    cachedContext = {
-      system,
-      suggestions: new Set(suggestions),
-      hash: await sha256(system),
-      loadedAt: Date.now(),
-    };
-  } catch (error) {
-    // 새로 못 읽으면 가지고 있던 것으로 계속 답한다.
-    console.error("context load failed", error);
-  }
+  const stored = await env.BUDGET.getByName("global").getContext();
+  if (!stored) return cachedContext;
+  // 같은 내용이면 바이트까지 같아야 프롬프트 캐시가 유지된다. 시각 같은 가변 값은 넣지 않는다.
+  const system = `${INSTRUCTIONS}\n\n<documents>\n${stored.context}\n</documents>`;
+  cachedContext = {
+    system,
+    suggestions: new Set(stored.suggestions),
+    hash: await sha256(system),
+    loadedAt: Date.now(),
+  };
   return cachedContext;
+}
+
+/** 사이트 배포 워크플로가 새 컨텍스트를 올리는 곳. 토큰을 아는 쪽만 쓸 수 있다. */
+async function handleContextUpload(request: Request, env: Env) {
+  const given = request.headers.get("Authorization") ?? "";
+  // 해시끼리 비교해 길이와 비교 시간으로 토큰이 새지 않게 한다.
+  const [a, b] = await Promise.all([sha256(given), sha256(`Bearer ${env.CONTEXT_TOKEN}`)]);
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  if (!env.CONTEXT_TOKEN || diff !== 0) return new Response("Unauthorized", { status: 401 });
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return new Response("Invalid JSON", { status: 400 });
+  }
+  const context = parseContext(body);
+  if (!context) return new Response("Invalid context", { status: 400 });
+
+  await env.BUDGET.getByName("global").putContext(context);
+  cachedContext = undefined;
+  return Response.json({ ok: true, chars: context.context.length });
 }
 
 function parseMessages(value: unknown): Message[] | undefined {
@@ -301,6 +343,9 @@ async function handleAsk(request: Request, env: Env, ctx: ExecutionContext, cors
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url);
+    if (url.pathname === "/context" && request.method === "PUT") {
+      return handleContextUpload(request, env);
+    }
     if (url.pathname !== "/ask") return new Response("Not found", { status: 404 });
 
     // 브라우저가 보내는 Origin만 확인한다. 위조할 수 있으므로 실제 방어는 뒤의 단계들이 맡는다.

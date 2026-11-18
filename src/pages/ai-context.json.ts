@@ -1,5 +1,5 @@
 // AI 답변용 컨텍스트. 사이트에 이미 공개된 프로필, 개발 기록, 글을 한 덩어리로 묶는다.
-// Worker가 이 파일을 읽어 시스템 프롬프트에 넣으므로, 글을 배포하면 AI도 함께 갱신된다.
+// 배포 워크플로가 이 파일을 Worker에 올리므로, 글을 배포하면 AI도 함께 갱신된다.
 import type { APIRoute } from "astro";
 import storyRaw from "../content/story/index.md?raw";
 import { ASK_SUGGESTIONS } from "../lib/ask";

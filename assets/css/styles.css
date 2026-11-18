@@ -1328,20 +1328,49 @@ main {
   outline-offset: 2px;
 }
 
-/* 고정된 독이 푸터를 가리지 않도록 자리를 비워 둔다. */
-.has-ask-dock body {
-  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
-}
-
 .ask-dock {
   position: fixed;
-  inset-block-end: max(var(--space-md), env(safe-area-inset-bottom));
-  inset-inline: 0;
+  inset-block-end: max(var(--space-lg), env(safe-area-inset-bottom));
+  inset-inline-end: max(var(--space-lg), env(safe-area-inset-right));
   z-index: 20;
   display: grid;
-  gap: var(--space-sm);
-  width: min(100% - 2rem, 40rem);
-  margin-inline: auto;
+  justify-items: end;
+  gap: var(--space-md);
+  width: min(100vw - 2 * var(--space-lg), 24rem);
+  /* 닫혀 있을 때는 버튼만 클릭을 받는다. */
+  pointer-events: none;
+}
+
+.ask-dock > * {
+  pointer-events: auto;
+}
+
+.ask-dock .ask-dock__fab {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: var(--border) solid var(--color-bg);
+  border-radius: 50%;
+  background: var(--color-acid);
+  box-shadow: 4px 4px 0 var(--color-pink);
+  color: var(--color-bg);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  line-height: 1;
+  transition:
+    transform var(--dur-short) var(--ease-out),
+    box-shadow var(--dur-short) var(--ease-out);
+}
+
+.ask-dock .ask-dock__fab:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.ask-dock--open .ask-dock__fab {
+  background: var(--color-pink);
+  box-shadow: 4px 4px 0 var(--color-cyan);
 }
 
 .ask-dock__bar,
@@ -1351,6 +1380,11 @@ main {
   border: var(--border) solid var(--color-acid);
   background: var(--color-card-raised);
   box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-pink);
+}
+
+.ask-dock__bar {
+  background: var(--color-bg);
+  box-shadow: none;
 }
 
 .ask-dock__bar input,
@@ -1392,7 +1426,7 @@ main {
   position: relative;
   display: grid;
   gap: var(--space-sm);
-  margin-block-start: var(--space-lg);
+  width: 100%;
   padding: var(--space-md);
   border: var(--border) solid var(--color-cyan);
   background: var(--color-card-raised);
@@ -1427,7 +1461,7 @@ main {
   display: grid;
   align-content: start;
   gap: var(--space-sm);
-  max-height: min(50dvh, 26rem);
+  max-height: min(45dvh, 22rem);
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -1540,6 +1574,11 @@ main {
 
   .ask-dock .ask-dock__tool:hover {
     color: var(--color-acid);
+  }
+
+  .ask-dock .ask-dock__fab:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--color-pink);
   }
 
   a:hover {
@@ -1665,5 +1704,9 @@ main {
 
   .ask-msg--pending::after {
     animation: none;
+  }
+
+  .ask-dock .ask-dock__fab {
+    transition: none;
   }
 }

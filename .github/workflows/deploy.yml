@@ -22,6 +22,15 @@ jobs:
         uses: actions/checkout@v7
       - name: Build Astro site
         uses: withastro/action@v6
+      # AI 답변의 근거가 되는 글 묶음을 Worker에 올린다. 실패해도 사이트 배포는 계속한다.
+      - name: Publish AI context
+        continue-on-error: true
+        env:
+          ASK_CONTEXT_TOKEN: ${{ secrets.ASK_CONTEXT_TOKEN }}
+        run: |
+          curl --fail-with-body -sS -X PUT https://ask.doyeong.dev/context \
+            -H "Authorization: Bearer $ASK_CONTEXT_TOKEN" \
+            --data-binary @dist/ai-context.json
 
   deploy:
     environment:
